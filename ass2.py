@@ -2,6 +2,7 @@ import math
 import os
 from collections import defaultdict
 
+
 class VSM:
     def __init__(self):
         self.dictionary = {}
@@ -32,31 +33,39 @@ class VSM:
                 self.dictionary[term] = 1
             else:
                 self.dictionary[term] += 1
-            self.postings[term].append((doc_id, tf))
-            doc_length += (1 + math.log10(tf)) ** 2
+            log_tf = 1 + math.log10(tf) if tf > 0 else 0
+            self.postings[term].append((doc_id, log_tf))
+            doc_length += log_tf ** 2
 
         self.doc_lengths[doc_id] = math.sqrt(doc_length)
 
     def tokenize(self, text):
         # Basic tokenization - split on whitespace and convert to lowercase
-        # You may want to implement more sophisticated tokenization
         return text.lower().split()
 
     def search(self, query):
         query_terms = self.tokenize(query)
-        query_weights = {}
+        query_weights = defaultdict(float)
+        query_length = 0
+
         for term in query_terms:
+            tf = 1 + math.log10(query_terms.count(term))
             if term in self.dictionary:
                 df = self.dictionary[term]
                 idf = math.log10(self.N / df)
-                query_weights[term] = (1 + math.log10(1)) * idf
+                query_weights[term] = tf * idf
+                query_length += query_weights[term] ** 2
+
+        query_length = math.sqrt(query_length)
 
         scores = defaultdict(float)
         for term, weight in query_weights.items():
-            for doc_id, tf in self.postings[term]:
-                tfidf = (1 + math.log10(tf)) * weight
+            normalized_query_weight = weight / query_length
+            for doc_id, log_tf in self.postings[term]:
+                tfidf = log_tf * normalized_query_weight
                 scores[doc_id] += tfidf
 
+        # Normalize document scores
         for doc_id in scores:
             scores[doc_id] /= self.doc_lengths[doc_id]
 
