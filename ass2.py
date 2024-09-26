@@ -69,9 +69,27 @@ vsm = VSM()
 corpus_directory = "Corpus"
 vsm.load_corpus(corpus_directory)
 
+
+query1 = """Developing your Zomato business account and profile is a great way to boost your 
+restaurants online reputation"""
+query2 = """Warwickshire, came from an ancient family and was the heiress to 
+some land"""
+
+result1 = vsm.search(query1)
+result2 = vsm.search(query2)
+
+print("Search Results for test-query 1:")
+for doc_id, score in result1:
+    print(f"Document {vsm.doc_ids[doc_id]}: {score}")
+
+print("---------------------------------------\n\n")
+print("Search Results for test-query 2:")
+for doc_id, score in result2:
+    print(f"Document {vsm.doc_ids[doc_id]}: {score}")
+
+print("\n")
 # Search query
-query = """The company also makes the market-leading Kindle e-book readers. Its promotion of these devices has led to dramatic growth in e-book publishing and turned Amazon.com into a major disruptive force in the book-publishing market. In 1994 Jeff Bezos, a former Wall Street hedge fund executive, incorporated Amazon.com, choosing the name primarily because it began with the first letter of the alphabet and because of its association with the vast South American river. On the basis of research he had conducted, Bezos concluded that books would be the most logical product initially to sell online. Amazon.com was not the first company to do so; Computer Literacy, a Silicon Valley bookstore, began selling books from its inventory to its technically astute customers in 1991. However, the promise of Amazon.com was to deliver any book to any reader anywhere. While Amazon.com famously started as a bookseller, Bezos contended from its start that the site was not merely a retailer of consumer products. He argued that Amazon.cm 
-was a technology company whose business was simplifying online transactions for consumers."""
+query = input("Enter the query you want to test: ")
 results = vsm.search(query)
 
 print("Search Results:")
